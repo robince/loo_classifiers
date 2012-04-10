@@ -37,8 +37,12 @@ for si=1:Ncls
         curftravg(:,si) = (Ntrl*ftravg(:,si) - curtrl) ./ (Ntrl-1);
         curexpftravg(:,si) = exp(-curftravg(:,si));
 
-        curlik = curexpftravg.*bsxfun(@rdivide,bsxfun(@power,curftravg,curtrl),facche(curtrl+1));
-
+        %curlika = curexpftravg.*bsxfun(@rdivide,bsxfun(@power,curftravg,curtrl),facche(curtrl+1));
+        % bsxfun is slow (for these array sizes)
+        tmpnum = curftravg.^curtrl(:,ones(Ncls,1));
+        tmpden = facche(curtrl+1);
+        curlik = curexpftravg.*(tmpnum./tmpden(:,ones(Ncls,1)));
+        
         curstmlik = prod(curlik);
         [~, prdstm(ti,si)] = max(curstmlik);
 
