@@ -33,11 +33,11 @@ for si=1:Ncls
     curftravg = ftravg;
     for ti=1:Ntrl
         %curprb(:) = 0;
-        thisr = data(:,si,ti); 
-        curftravg(:,si) = (Ntrl*ftravg(:,si) - thisr) ./ (Ntrl-1);
+        curtrl = data(:,si,ti);
+        curftravg(:,si) = (Ntrl*ftravg(:,si) - curtrl) ./ (Ntrl-1);
         curexpftravg(:,si) = exp(-curftravg(:,si));
 
-        curlik = curexpftravg.*bsxfun(@rdivide,bsxfun(@power,curftravg,thisr),facche(thisr+1));
+        curlik = curexpftravg.*bsxfun(@rdivide,bsxfun(@power,curftravg,curtrl),facche(curtrl+1));
 
         curstmlik = prod(curlik);
         [~, prdstm(ti,si)] = max(curstmlik);
