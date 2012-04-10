@@ -1,4 +1,4 @@
-function [conmtx,info] = nearest_mean(data)
+function [conmtx,info] = diag_linear(data)
 % nearest_mean (features, classes, trials)
 
 [Nftr, Ncls, Ntrl] = size(data);
