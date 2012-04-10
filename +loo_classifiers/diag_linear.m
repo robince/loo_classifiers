@@ -25,9 +25,12 @@ for ci=1:Ncls
         curtrl = data(:,ci,ti);       
         % update mean
         curftravg(:,ci) = (ftrsum(:,ci) - curtrl) ./ Ntrl1;
-        % update variance
-        demeantrl = curtrl - ftravg(:,ci);
-        curftrvar = (ftrvar - demeantrl.*demeantrl) / dof;
+        % update variance using Knuth online algorithm
+        % http://www.johndcook.com/standard_deviation.html
+        % subtract mean
+        demeantrlold = curtrl - ftravg(:,ci);
+        demeantrlnew = curtrl - curftravg(:,ci);
+        curftrvar = (ftrvar - demeantrlnew.*demeantrlold) / dof;
         
         %stmdst = sum( bsxfun(@rdivide, bsxfun(@minus, curtrl, curftravg).^2, curftrvar), 1);
         % much faster: (at least for small arrays)
