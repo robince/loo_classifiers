@@ -22,6 +22,7 @@ The currently implemented algorithms are:
 * `quadratic` : MVN clusters
 * `nearest_mean` : MVN clusters, pooled diagonal covariance, equal variances (template matching)
 * `poisson_bayes` : Independent poisson features for each cluster. *Count data only*
+* `multinom_bayes` : Independent multinomial features for each cluster. *Count data only*
 
 Contact
 -------
