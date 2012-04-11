@@ -19,27 +19,30 @@ function [conmtx,info] = knn(data,k,metric)
 %
 
 [Nftr, Ncls, Ntrl] = size(data);
-
+% flatten trials and classes
+datflt = data(:,:)';
 % build search object
+% kdtree is faster, but exhaustive allows more metrics
+% including user defined function
 nsmethod = 'kdtree';
 %nsmethod = 'exhaustive';
-NS = createns(data(:,:)','NSMethod',nsmethod,'Distance',metric);
+NS = createns(datflt,'NSMethod',nsmethod,'Distance',metric);
 cls = repmat(0:(Ncls-1),[1 Ntrl]);
 
 prdstm = zeros(Ntrl,Ncls);
 conmtx = zeros(Ncls,Ncls);
-
 prctrl = 100 / Ntrl;
 
+% do all nearest neighbours at once
+% (only one pdist2 calculation in exhaustive search case)
+% k+1 neighbours because we will obtain current point in results
+[idx, dst] = knnsearch(NS, datflt,'k',k+1,'IncludeTies',true);
 curidx = 1;
 for ti=1:Ntrl
     for ci=1:Ncls
-        % k+1 because we will obtain current point in results
-        [idx, dst] = knnsearch(NS, data(:,ci,ti)','k',k+1,'IncludeTies',true);
         % remove current leave out
         % knncls indexes classes from 0 (for bincount)
-        knncls = cls(idx{1}(idx{1}~=curidx));
-        curidx = curidx + 1;
+        knncls = cls(idx{curidx}(idx{curidx}~=curidx));
         % count votes
         votcnt = bincount(knncls,Ncls);
         [cnt, prestm] = max(votcnt);
@@ -51,15 +54,22 @@ for ti=1:Ntrl
                 % have a tie
                 tiemin = zeros(1,length(tieidx));
                 for tie=1:Ntie
-                   tiemin(tie) = min(dst{1}(knncls == (tieidx(tie)-1)));
+                   tiemin(tie) = min(dst{curidx}(knncls == (tieidx(tie)-1)));
                 end
-                [~, nrst] = min(tiemin);
-                prestm = tieidx(nrst);
+                [mindst, mintie] = min(tiemin);
+                % if distances are also tied chose at random
+                % use == since usually will be integers
+                dsttieidx = find(tiemin==mindst);
+                if length(dsttieidx)>1
+                    mintie = dsttieidx( randi(length(dsttieidx),1) );
+                end
+                prestm = tieidx(mintie);
             end % tie
         end % tie check
-            
+
         prdstm(ti,ci) = prestm;
         conmtx(ci, prestm) = conmtx(ci, prestm) + prctrl;
+        curidx = curidx + 1;
     end % classes
 end % trials
 
