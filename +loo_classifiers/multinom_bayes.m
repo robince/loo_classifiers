@@ -8,7 +8,7 @@ function [conmtx,info] = multinom_bayes(data, lambda)
 %   are the same number of trials for each class, and class priors are 
 %   uniform. DATA MUST BE INTEGER COUNTS.
 %
-%   LAMBDA is a smoothing parameter (between 0 and 1) used when estimating
+%   LAMBDA is the parameter for Laplace smoothing used when estimating
 %   the probabilities.
 %
 %   CONMTX is the (Ncls, Ncls) confusion matrix where the i,j entry gives
@@ -33,9 +33,6 @@ for fi=1:Nftr
     for ci=1:Ncls
         ftrcnt(:,fi,ci) = loo_classifiers.bincount(data(fi,ci,:),maxdim);
     end
-    % smoothing
-    %ftrcnt(1:ftrdim(fi), fi, :) = ftrcnt(1:ftrdim(fi), fi, :) + lambda;
-    % now only zero counts should be values that really never happen
 end
 % smooth everywhere since non-occuring values will never
 % be evaluated... only normalisation needs to keep track of 
@@ -44,12 +41,10 @@ ftrcnt = ftrcnt + lambda;
 
 % normalise to probabilities
 nrmval = Ntrl + lambda*ftrdim;
+% normalise using dimension of each feature
 ftrprb = bsxfun(@rdivide, ftrcnt, reshape(nrmval, [1 Nftr 1]));
+% or normalise using largest dimension
 %ftrprb = ftrcnt ./ (Ntrl + lambda*maxdim);
-%ftrprb = ftrcnt;
-
-% current probability
-%curprb = zeros(maxdim, Nftr);
 
 % build stim index for sub2ind 
 stmidx = cell(Ncls,1);
@@ -64,27 +59,27 @@ prdstm = zeros(Ntrl,Ncls);
 conmtx = zeros(Ncls,Ncls);
 prctrl = 100 / Ntrl;
 
+%curprb = zeros(maxdim, Nftr);
 for ci=1:Ncls
+    curftrprb = ftrprb;
     for ti=1:Ntrl
         %curprb(:) = 0;
         % turns out for small sizes faster to allocate then reset
         curprb = zeros(maxdim, Nftr);
         curtrl = data(:,ci,ti)+1;
         for fi=1:Nftr
-            curprb(curtrl(fi),fi) = 1 ./ (Ntrl + lambda*maxdim);
+            curprb(curtrl(fi),fi) = 1 ./ (Ntrl + lambda*ftrdim(fi));
+            %curprb(curtrl(fi),fi) = 1 ./ (Ntrl + lambda*maxdim);
         end
         % remove current trial from counts
-        curftrprb = ftrprb;
-        curftrprb(:,:,ci) = curftrprb(:,:,ci) - curprb;
+        curftrprb(:,:,ci) = ftrprb(:,:,ci) - curprb;
 
         % normalise and predict
         nrmstm = nrmval ./ ((Ntrl-1) + lambda*ftrdim);
         nrmstm = nrmstm';
-        %curftrprb(:,:,ci) = bsxfun(@times, curftrprb(:,:,ci), nrmstm');
         curftrprb(:,:,ci) = curftrprb(:,:,ci) .* nrmstm(ones(maxdim,1),:);
         %curftrprb(:,:,ci) = curftrprb(:,:,ci) .* ((Ntrl+lambda*maxdim) ./ ((Ntrl-1)+lambda*maxdim)); 
 
-        % now have correct leave one out prob setup
         %xidx = repmat(curtrl, [Ncls 1]); 
         % repmat is slow
         xidx = curtrl(:,ones(1,Ncls));
