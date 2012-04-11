@@ -1,0 +1,29 @@
+loo\_classifiers
+================
+
+This is a Matlab package to efficiently implement leave-one-out cross-validation for a number of basic supervised learning algorithms.
+
+I was surprised I couldn't find anything online to do this, so perhaps this will be useful to other people.
+
+Since this was developed specifically for my work, studying neural coding, it makes some strong assumptions - namely balanced data (same number of trials for every class) and assumes uniform priors over the classes.
+
+All the algorithms take a single argument of a 3d data array with dimensions `(Nftr, Ncls, Ntrl)`, and returns two arguments - the confusion matrix `(Ncls, Ncls)` and the information in the confusion matrix. To calculate the information value you will need the [InfoToolbox](http://www.ibtb.org/) package installed.
+
+Where possible, results were tested against Matlab `classify` from the Statistics Toolbox.
+
+Algorithms
+----------
+
+The currently implemented algorithms are:
+
+* `diag_linear` : MVN clusters, pooled diagonal covariance matrix
+* `linear` : MVN clusters, pooled covariance matrix
+* `diag_quadratic` : MVN clusters, diagonal covariance matrices
+* `quadratic` : MVN clusters
+* `nearest_mean` : MVN clusters, pooled diagonal covariance, equal variances (template matching)
+* `poisson_bayes` : Independent poisson features for each cluster. *Count data only*
+
+Contact
+-------
+
+Bugs / comments / ideas / criticism to robince at gmail dt com

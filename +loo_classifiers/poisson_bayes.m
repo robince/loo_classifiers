@@ -1,10 +1,20 @@
 function [conmtx, info] = poisson_bayes(data)
-% Poisson Naive bayes decoding with leave-one-out cross validation
-% DIY implementation
-% ASSUMES INTEGER INPUT FROM 0
+%LOO_CLASSIFIERS.POISSON_BAYES Poisson Naive Bayes with LOOCV.
+%   [CONMTX,INFO] = LOO_CLASSIFIERS.POISSON_BAYES(DATA) performs
+%   leave-one-out cross validation using a Poisson naive bayes classifier
+%   (class conditional feature probabilities are independent poisson).
 %
-% Same syntax as Lin_decoding
-% data (datapoints, stimuli, trials)
+%   DATA should be a (Nftr, Ncls, Ntrl) 3D array. It is assumed that there 
+%   are the same number of trials for each class, and class priors are 
+%   uniform. DATA MUST BE INTEGER COUNTS.
+%
+%   CONMTX is the (Ncls, Ncls) confusion matrix where the i,j entry gives
+%   the percentage of class i trials which were classsified as class j.
+%   mean(diag(CONMTX)) gives the average correct performance.
+%
+%   INFO is the information in the confusion matrix.
+%
+
 [Nftr, Ncls, Ntrl] = size(data);
 
 % mean as max lik poison lamda
