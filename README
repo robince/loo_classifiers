@@ -7,7 +7,7 @@ I was surprised I couldn't find anything online to do this, so perhaps this will
 
 Since this was developed specifically for my work, studying neural coding, it makes some strong assumptions - namely balanced data (same number of trials for every class) and assumes uniform priors over the classes.
 
-All the algorithms take a single argument of a 3d data array with dimensions `(Nftr, Ncls, Ntrl)`, and returns two arguments - the confusion matrix `(Ncls, Ncls)` and the information in the confusion matrix. To calculate the information value you will need the [InfoToolbox](http://www.ibtb.org/) package installed.
+All the algorithms take as the first argument a 3d data array with dimensions `(Nftr, Ncls, Ntrl)`, and returns two arguments - the confusion matrix `(Ncls, Ncls)` and the information in the confusion matrix. To calculate the information value you will need the [InfoToolbox](http://www.ibtb.org/) package installed. Some classifiers have extra parameters which should be passed as additional input arguments.
 
 Where possible, results were tested against Matlab `classify` from the Statistics Toolbox.
 
