@@ -30,8 +30,8 @@ ftrcnt = zeros(maxdim, Nftr, Ncls);
 
 % build counts from full training data
 for fi=1:Nftr
-    for si=1:Ncls
-        ftrcnt(:,fi,si) = loo_classifiers.bincount(data(fi,si,:),maxdim);
+    for ci=1:Ncls
+        ftrcnt(:,fi,ci) = loo_classifiers.bincount(data(fi,ci,:),maxdim);
     end
     % smoothing
     %ftrcnt(1:ftrdim(fi), fi, :) = ftrcnt(1:ftrdim(fi), fi, :) + lambda;
@@ -53,8 +53,8 @@ ftrprb = bsxfun(@rdivide, ftrcnt, reshape(nrmval, [1 Nftr 1]));
 
 % build stim index for sub2ind 
 stmidx = cell(Ncls,1);
-for si=1:Ncls
-    stmidx{si} = (si-1)*ones(Nftr,1);
+for ci=1:Ncls
+    stmidx{ci} = (ci-1)*ones(Nftr,1);
 end
 stmidx = cell2mat(stmidx);
 yidx = repmat((0:(Nftr-1))', [Ncls 1]);
@@ -64,25 +64,25 @@ prdstm = zeros(Ntrl,Ncls);
 conmtx = zeros(Ncls,Ncls);
 prctrl = 100 / Ntrl;
 
-for si=1:Ncls
+for ci=1:Ncls
     for ti=1:Ntrl
         %curprb(:) = 0;
         % turns out for small sizes faster to allocate then reset
         curprb = zeros(maxdim, Nftr);
-        curtrl = data(:,si,ti)+1;
+        curtrl = data(:,ci,ti)+1;
         for fi=1:Nftr
             curprb(curtrl(fi),fi) = 1 ./ (Ntrl + lambda*maxdim);
         end
         % remove current trial from counts
         curftrprb = ftrprb;
-        curftrprb(:,:,si) = curftrprb(:,:,si) - curprb;
+        curftrprb(:,:,ci) = curftrprb(:,:,ci) - curprb;
 
         % normalise and predict
         nrmstm = nrmval ./ ((Ntrl-1) + lambda*ftrdim);
         nrmstm = nrmstm';
-        %curftrprb(:,:,si) = bsxfun(@times, curftrprb(:,:,si), nrmstm');
-        curftrprb(:,:,si) = curftrprb(:,:,si) .* nrmstm(ones(maxdim,1),:);
-        %curftrprb(:,:,si) = curftrprb(:,:,si) .* ((Ntrl+lambda*maxdim) ./ ((Ntrl-1)+lambda*maxdim)); 
+        %curftrprb(:,:,ci) = bsxfun(@times, curftrprb(:,:,ci), nrmstm');
+        curftrprb(:,:,ci) = curftrprb(:,:,ci) .* nrmstm(ones(maxdim,1),:);
+        %curftrprb(:,:,ci) = curftrprb(:,:,ci) .* ((Ntrl+lambda*maxdim) ./ ((Ntrl-1)+lambda*maxdim)); 
 
         % now have correct leave one out prob setup
         %xidx = repmat(curtrl, [Ncls 1]); 
@@ -91,7 +91,7 @@ for si=1:Ncls
         xidx = xidx(:);
 
         %idx = sub2ind(size(curftrprb), ...
-                      %repmat(data(:,si,ti)+1, [Ncls 1]), ...
+                      %repmat(data(:,ci,ti)+1, [Ncls 1]), ...
                       %repmat((1:Nftr)', [Ncls 1]), ...
                       %stmidx);
         % sub2ind is slow
@@ -99,11 +99,10 @@ for si=1:Ncls
         curlik = reshape(curftrprb(idx), [Nftr Ncls]);
         curstmlik = prod(curlik);
 
-        [~, prdstm(ti,si)] = max(curstmlik);
-
-        conmtx(si, prdstm(ti,si)) = conmtx(si, prdstm(ti,si)) + prctrl;
-    end
-end
+        [~, prdstm(ti,ci)] = max(curstmlik);
+        conmtx(ci, prdstm(ti,ci)) = conmtx(ci, prdstm(ti,ci)) + prctrl;
+    end % trials
+end % classes
 
 
 opts.method = 'dr';
