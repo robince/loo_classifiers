@@ -9,7 +9,7 @@ function [conmtx,info] = knn(data,k,metric)
 %   uniform.
 %
 %   K is the integer number of neighbours. METRIC is the distance metric 
-%   to use.
+%   to use (see CREATENS documentation).
 %
 %   CONMTX is the (Ncls, Ncls) confusion matrix where the i,j entry gives
 %   the percentage of class i trials which were classsified as class j.
@@ -17,6 +17,10 @@ function [conmtx,info] = knn(data,k,metric)
 %
 %   INFO is the information in the confusion matrix.
 %
+%nsmethod = 'kdtree';
+nsmethod = 'exhaustive';
+%includeties = false;
+includeties = true;
 
 [Nftr, Ncls, Ntrl] = size(data);
 % flatten trials and classes
@@ -24,11 +28,9 @@ datflt = data(:,:)';
 % build search object
 % kdtree is faster, but exhaustive allows more metrics
 % including user defined function
-nsmethod = 'kdtree';
-%nsmethod = 'exhaustive';
+
 NS = createns(datflt,'NSMethod',nsmethod,'Distance',metric);
 cls = repmat(0:(Ncls-1),[1 Ntrl]);
-
 prdstm = zeros(Ntrl,Ncls);
 conmtx = zeros(Ncls,Ncls);
 prctrl = 100 / Ntrl;
@@ -36,12 +38,21 @@ prctrl = 100 / Ntrl;
 % do all nearest neighbours at once
 % (only one pdist2 calculation in exhaustive search case)
 % k+1 neighbours because we will obtain current point in results
-[idx, dst] = knnsearch(NS, datflt,'k',k+1,'IncludeTies',true);
+[idx, dst] = knnsearch(NS, datflt,'k',k+1,'IncludeTies',includeties);
+if ~includeties
+   idx = num2cell(idx,2);
+   dst = num2cell(dst,2);
+end
 curidx = 1;
 for ti=1:Ntrl
     for ci=1:Ncls
         % remove current leave out
         % knncls indexes classes from 0 (for bincount)
+        if length(idx{curidx}==1)
+            % with includeties, sometimes only the point itself is returned
+            % not sure why this is
+            [idx{curidx} dst{curidx}] = knnsearch(NS, datflt(curidx,:),'k',k+1,'IncludeTies',false);
+        end
         knncls = cls(idx{curidx}(idx{curidx}~=curidx));
         % count votes
         votcnt = bincount(knncls,Ncls);
