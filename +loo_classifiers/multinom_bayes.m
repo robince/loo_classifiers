@@ -92,7 +92,7 @@ for ci=1:Ncls
         % sub2ind is slow
         idx = xidx + offsetidx;
         curlik = reshape(curftrprb(idx), [Nftr Ncls]);
-        curstmlik = prod(curlik);
+        curstmlik = prod(curlik,1);
 
         [~, prdstm(ti,ci)] = max(curstmlik);
         conmtx(ci, prdstm(ti,ci)) = conmtx(ci, prdstm(ti,ci)) + prctrl;

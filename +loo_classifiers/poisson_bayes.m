@@ -53,7 +53,7 @@ for si=1:Ncls
         tmpden = facche(curtrl+1);
         curlik = curexpftravg.*(tmpnum./tmpden(:,ones(Ncls,1)));
         
-        curstmlik = prod(curlik);
+        curstmlik = prod(curlik,1);
         [~, prdstm(ti,si)] = max(curstmlik);
 
         conmtx(si, prdstm(ti,si)) = conmtx(si, prdstm(ti,si)) + prctrl;
