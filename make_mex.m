@@ -36,3 +36,12 @@ MEXARGS{end+1} = fullfile(PKGDIR,'bincount.f');
 MEXARGS{end+1} = fullfile(MAPI_LIB,['MatlabAPImx' LIBEXT]);
 MEXARGS{end+1} = fullfile(MAPI_LIB,['MatlabAPImex' LIBEXT]);
 mex(MEXARGS{:});
+
+% nearest_mean
+MEXARGS = ARGS;
+MEXARGS{end+1} = fullfile(PKGDIR,'nearest_mean_core.f');
+MEXARGS{end+1} = fullfile(MAPI_LIB,['MatlabAPImx' LIBEXT]);
+MEXARGS{end+1} = fullfile(MAPI_LIB,['MatlabAPImex' LIBEXT]);
+mex(MEXARGS{:});
+
+
