@@ -37,6 +37,7 @@ invfac = (Ntottrl - 2) / (Ntottrl - 1);
 
 % naming consistent with SM formula
 A = invftrcov;
+invfacA = invfac .* A;
 for ci=1:Ncls 
     curftravg = ftravg;
     for ti=1:Ntrl
@@ -57,9 +58,10 @@ for ci=1:Ncls
         % update pooled covariance matrix using
         % Shannon-Morrison formula
         % http://en.wikipedia.org/wiki/Sherman%E2%80%93Morrison_formula
-        num = A*u*v'*A;
-        dem = Ntottrl1 + u'*A*v;
-        curinvftrcov = invfac .* (A - num./dem);
+        num = (A*u)*(v'*A);
+        den = (Ntottrl1 + u'*A*v) / invfac;
+        %curinvftrcov = invfac .* (A - num./den);
+        curinvftrcov = invfacA - (num./den);
         
         tmpdst = curtrl(:, ones(Ncls,1))-curftravg;       
 %         stmdst = zeros(Ncls,1);
