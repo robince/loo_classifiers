@@ -36,7 +36,7 @@ end
 
 prctrl = 100 / Ntrl;
 invfac = (Ntrl - 2) / (Ntrl - 1);
-detfac = -Ncls*log(invfac) - log(Ntrl);
+detfac = -Ncls*log(invfac) - log(Ntrl1);
 
 for ci=1:Ncls 
     curftravg = ftravg;
@@ -50,19 +50,19 @@ for ci=1:Ncls
         curftravg(:,ci) = (ftrsum(:,ci) - curtrl) ./ Ntrl1;
         
         % subtract mean
-        %demeantrlold = curtrl - ftravg(:,ci);
+        demeantrlold = curtrl - ftravg(:,ci);
         demeantrlnew = curtrl - curftravg(:,ci);
         
         % flip sign since subtracting from original matrix
         % not adding as in SM formula
-        u = -demeantrlnew;
+        u = -demeantrlold;
         v = demeantrlnew;      
         
         % update covariance matrices using
         % Shannon-Morrison formula
         % http://en.wikipedia.org/wiki/Sherman%E2%80%93Morrison_formula
-        num = A*u*v'*A;
-        den = Ntrl + v'*A*u;
+        num = (A*u)*(v'*A);
+        den = Ntrl1 + u'*A*v;
         curinvftrcov(:,:,ci) = invfac .* (A - num./den);
         
         % update determinant using matrix determinant lemma
