@@ -27,8 +27,8 @@ ftravg = mean(data, 3);
 ftrsum = Ntrl*ftravg;
 % pooled feature variance
 demeandata = bsxfun(@minus, data, ftravg);
-
-ftrcov = cov(demeandata(:,:)');
+xc = demeandata(:,:);
+ftrcov = (xc*xc') / Ntrl1;
 invftrcov = inv(ftrcov);
 %ftrvar = (Ntottrl-1)*var(demeandata(:,:), [], 2);
 
