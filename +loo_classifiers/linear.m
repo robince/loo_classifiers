@@ -25,12 +25,11 @@ conmtx = zeros(Ncls,Ncls);
 
 ftravg = mean(data, 3);
 ftrsum = Ntrl*ftravg;
-% pooled feature variance
+% pooled feature covariance
 demeandata = bsxfun(@minus, data, ftravg);
 xc = demeandata(:,:);
-ftrcov = (xc*xc') / Ntrl1;
+ftrcov = (xc*xc') / Ntottrl1;
 invftrcov = inv(ftrcov);
-%ftrvar = (Ntottrl-1)*var(demeandata(:,:), [], 2);
 
 prctrl = 100 / Ntrl;
 invfac = (Ntottrl - 2) / (Ntottrl - 1);
@@ -46,7 +45,6 @@ for ci=1:Ncls
         % update mean
         curftravg(:,ci) = (ftrsum(:,ci) - curtrl) ./ Ntrl1;
         % update covariance
-        % subtract mean
         demeantrlold = curtrl - ftravg(:,ci);
         demeantrlnew = curtrl - curftravg(:,ci);
         
