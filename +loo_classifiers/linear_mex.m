@@ -19,7 +19,7 @@ function [conmtx,info] = linear_mex(data,noinfo)
 % call mex version
 [conmtx, prdstm] = loo_classifiers.linear_core(data);
 
-if nargin<1
+if nargin<2
     opts.method = 'dr';
     opts.bias   = 'pt';
     opts.btsp   = 0;

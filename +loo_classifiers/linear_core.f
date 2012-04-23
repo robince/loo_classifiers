@@ -70,7 +70,7 @@ subroutine mexFunction(nlhs, plhs, nrhs, prhs)
     allocate(facinvftrcov(Nftr, Nftr))
     allocate(xc(Nftr, Ncls*Ntrl))
     xc = reshape(cendat, (/ Nftr, Ncls*Ntrl /) )
-    ftrcov = matmul(xc, transpose(xc)) / Ntrl1
+    ftrcov = matmul(xc, transpose(xc)) / Ntottrl1
 
     ! would like to use mxArrayHeader(Destroy) here
     ! to avoid copy, but get crashes when I do that
