@@ -59,3 +59,11 @@ MEXARGS{end+1} = fullfile(MAPI_LIB,['MatlabAPImx' LIBEXT]);
 MEXARGS{end+1} = fullfile(MAPI_LIB,['MatlabAPImex' LIBEXT]);
 
 mex(MEXARGS{:});
+
+%%
+% diag_linear
+MEXARGS = ARGS;
+MEXARGS{end+1} = fullfile(PKGDIR,'diag_linear_core.f');
+MEXARGS{end+1} = fullfile(MAPI_LIB,['MatlabAPImx' LIBEXT]);
+MEXARGS{end+1} = fullfile(MAPI_LIB,['MatlabAPImex' LIBEXT]);
+mex(MEXARGS{:});
