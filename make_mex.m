@@ -55,7 +55,6 @@ MEXARGS{end+1} = 'mkl_intel_ilp64.lib';
 % MEXARGS{end+1} = 'mkl_intel_thread.lib';
 MEXARGS{end+1} = 'mkl_sequential.lib';
 MEXARGS{end+1} = 'mkl_core.lib';
-% MEXARGS{end+1} = 'libiomp5md.lib';
 MEXARGS{end+1} = fullfile(MAPI_LIB,['MatlabAPImx' LIBEXT]);
 MEXARGS{end+1} = fullfile(MAPI_LIB,['MatlabAPImex' LIBEXT]);
 
