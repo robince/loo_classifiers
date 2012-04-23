@@ -46,14 +46,16 @@ mex(MEXARGS{:});
 %%
 % linear
 MEXARGS = ARGS;
+% MEXARGS{end+1} = '-liomp5md'; % link omp dynamically as per docs
 MEXARGS{end+1} = fullfile(PKGDIR,'linear_core.f');
 %MEXARGS{end+1} = 'C:\Program Files (x86)\Intel\Composer XE 2011 SP1\mkl\lib\intel64\mkl_rt.lib';
 MEXARGS{end+1} = 'mkl_lapack95_ilp64.lib';
 MEXARGS{end+1} = 'mkl_blas95_ilp64.lib';
 MEXARGS{end+1} = 'mkl_intel_ilp64.lib';
-MEXARGS{end+1} = 'mkl_intel_thread.lib';
+% MEXARGS{end+1} = 'mkl_intel_thread.lib';
+MEXARGS{end+1} = 'mkl_sequential.lib';
 MEXARGS{end+1} = 'mkl_core.lib';
-MEXARGS{end+1} = 'libiomp5md.lib';
+% MEXARGS{end+1} = 'libiomp5md.lib';
 MEXARGS{end+1} = fullfile(MAPI_LIB,['MatlabAPImx' LIBEXT]);
 MEXARGS{end+1} = fullfile(MAPI_LIB,['MatlabAPImex' LIBEXT]);
 

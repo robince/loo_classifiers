@@ -1,4 +1,4 @@
-function [conmtx,info] = linear_mex(data)
+function [conmtx,info] = linear_mex(data,noinfo)
 %LOO_CLASSIFIERS.LINEAR Linear discriminant analysis with LOOCV.
 %   [CONMTX,INFO] = LOO_CLASSIFIERS.LINEAR(DATA) performs leave-one-out
 %   cross validation using a linear discriminant classifier (pooled
@@ -19,9 +19,12 @@ function [conmtx,info] = linear_mex(data)
 % call mex version
 [conmtx, prdstm] = loo_classifiers.linear_core(data);
 
-opts.method = 'dr';
-opts.bias   = 'pt';
-opts.btsp   = 0;
-opts.nt     = Ntrl;
-info = information(reshape(prdstm,[1 Ntrl Ncls]),opts,'I');
-
+if nargin<1
+    opts.method = 'dr';
+    opts.bias   = 'pt';
+    opts.btsp   = 0;
+    opts.nt     = Ntrl;
+    info = information(reshape(prdstm,[1 Ntrl Ncls]),opts,'I');
+else
+    info = 0;
+end
