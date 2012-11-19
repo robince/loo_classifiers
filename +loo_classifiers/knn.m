@@ -55,7 +55,7 @@ for ti=1:Ntrl
         end
         knncls = cls(idx{curidx}(idx{curidx}~=curidx));
         % count votes
-        votcnt = bincount(knncls,Ncls);
+        votcnt = loo_classifiers.bincount(knncls,Ncls);
         [cnt, prestm] = max(votcnt);
         if cnt < k/2
             % might have a tie
