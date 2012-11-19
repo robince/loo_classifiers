@@ -20,11 +20,12 @@ function [conmtx,info] = linear_mex(data,noinfo)
 [conmtx, prdstm] = loo_classifiers.diag_linear_core(data);
 
 if nargin<2
-    opts.method = 'dr';
-    opts.bias   = 'pt';
-    opts.btsp   = 0;
-    opts.nt     = Ntrl;
-    info = information(reshape(prdstm,[1 Ntrl Ncls]),opts,'I');
+%     opts.method = 'dr';
+%     opts.bias   = 'pt';
+%     opts.btsp   = 0;
+%     opts.nt     = Ntrl;
+%     info = information(reshape(prdstm,[1 Ntrl Ncls]),opts,'I');
+    info = loo_classifiers.fastinfo(reshape(prdstm,[1 Ntrl Ncls]));
 else
     info = 0;
 end
