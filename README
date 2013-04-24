@@ -29,3 +29,16 @@ Contact
 -------
 
 Bugs / comments / ideas / criticism to robince at gmail dt com
+
+This is unpublished research code so comes with no guarentees. Please feel free to try it out, but if it is useful to you and forms a key part of an analysis please consider contacting me. Perhaps I could help in some way with feedback or modifications or optimisations specific to your case. I don't have any citation yet to provide for this but will update here if/when I do. 
+
+License
+-------
+
+This project is licensed under version 3 of the GNU General Public License. For the exact terms please see the [LICENSE file](https://github.com/robince/loo_classifiers/blob/master/LICENSE).
+
+ToDo
+----
+
+- update to use MatlabAPI\_lite
+- change interface to more conventional seperate feature and class indicator variables + allow non-uniform classes
