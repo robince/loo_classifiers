@@ -66,3 +66,17 @@ MEXARGS{end+1} = fullfile(PKGDIR,'diag_linear_single_core.f');
 MEXARGS{end+1} = fullfile(MAPI_LIB,['MatlabAPImx.' OBJEXT]);
 MEXARGS{end+1} = fullfile(MAPI_LIB,['MatlabAPImex.' OBJEXT]);
 mex(MEXARGS{:});
+
+%%
+%%
+% +looc
+PKGDIR = '+looc';
+PKGARGS = ARGS;
+PKGARGS{end+1} = '-outdir'; PKGARGS{end+1} = PKGDIR;
+
+% nearest_mean
+MEXARGS = PKGARGS;
+MEXARGS{end+1} = fullfile(PKGDIR,'nearest_mean_core.f');
+MEXARGS{end+1} = fullfile(MAPI_LIB,['MatlabAPImx.' OBJEXT]);
+MEXARGS{end+1} = fullfile(MAPI_LIB,['MatlabAPImex.' OBJEXT]);
+mex(MEXARGS{:});
