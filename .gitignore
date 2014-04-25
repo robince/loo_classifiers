@@ -1,4 +1,10 @@
+.DS_Store
 *.swp
 *.asv
 *.mexw64
+*.mexa64
+*.mexmaci64
 *.pdb
+*.mod
+*__genmod*
+*~

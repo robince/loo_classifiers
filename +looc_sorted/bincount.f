@@ -15,6 +15,7 @@ subroutine mexFunction(nlhs, plhs, nrhs, prhs)
 ! LOC
     real(8), pointer :: X(:), M, C(:)
     mwSize :: i, mi, n, xi
+    mwSize, parameter :: One=1
     mwPointer :: mxC
 
     if( nrhs /= 2 ) then
@@ -24,8 +25,8 @@ subroutine mexFunction(nlhs, plhs, nrhs, prhs)
         call mexErrMsgTxt("This function returns 1 output")
     endif
 
-    X => fpGetPr1( prhs(1) );
-    M => fpGetPr0( prhs(2) );
+    call fpGetPr( X, prhs(1) )
+    call fpGetPr( M, prhs(2) )
 
     if( (.not.associated(X)) .or. (.not.associated(M)) ) then
         call mexErrMsgTxt("Problem with inputs: check types and dimensions")
@@ -33,8 +34,8 @@ subroutine mexFunction(nlhs, plhs, nrhs, prhs)
     
     mi = M
     n = size(X)
-    C => fpAllocate1( mi )
-    mxC = mxArrayHeader(C)
+    mxC = mxCreateNumericMatrix( mi, One, mxDOUBLE_CLASS, mxREAL )
+    call fpGetPr( X, mxC )
 
     C = 0.0d0
     do i=1,n

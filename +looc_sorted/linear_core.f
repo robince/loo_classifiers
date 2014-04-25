@@ -16,7 +16,7 @@ subroutine mexFunction(nlhs, plhs, nrhs, prhs)
     mwPointer plhs(*), prhs(*), lhs(1), rhs(1)
     integer(4) nlhs, nrhs
 ! LOC
-    real(8), pointer :: dat(:,:,:), conmtx(:,:), prdstm(:,:), invftrcov(:,:)
+    real(8), pointer :: dat(:,:,:), conmtx(:,:), prdstm(:,:), invftrcov(:,:), frhs(:,:)
     real(8), allocatable :: ftravg(:,:), ftrsum(:,:),curtrl(:), stmdif(:,:), stmdst(:)
     real(8), allocatable :: cendat(:,:,:), ftrcov(:,:), xc(:,:)
     real(8), allocatable :: facinvftrcov(:,:), curftravg(:,:), curinvftrcov(:,:)
@@ -33,7 +33,7 @@ subroutine mexFunction(nlhs, plhs, nrhs, prhs)
         call mexErrMsgTxt("This function returns 2 output")
     endif
 
-    dat => fpGetPr3( prhs(1) )
+    call fpGetPr( dat, prhs(1) )
 
     if( (.not.associated(dat)) ) then
         call mexErrMsgTxt("Problem with inputs: check types and dimensions")
@@ -46,12 +46,13 @@ subroutine mexFunction(nlhs, plhs, nrhs, prhs)
     Ntottrl = Ntrl * Ncls
     Ntottrl1 = Ntottrl - 1
 
-    conmtx => fpAllocate2( Ncls, Ncls )
-    prdstm => fpAllocate2( Ntrl, Ncls )
-    conmtx = 0.0d0
+    plhs(1) = mxCreateNumericMatrix( Ncls, Ncls, mxDOUBLE_CLASS, mxREAL)
+    call fpGetPr( conmtx, plhs(1) )
 
-    plhs(1) = mxArrayHeader(conmtx)
-    plhs(2) = mxArrayHeader(prdstm)
+    plhs(2) = mxCreateNumericMatrix( Ntrl, Ncls, mxDOUBLE_CLASS, mxREAL)
+    call fpGetPr( prdstm, plhs(2) )
+
+    conmtx = 0.0d0
     
     ! mean responses
     allocate(ftravg(Nftr, Ncls))
@@ -76,10 +77,14 @@ subroutine mexFunction(nlhs, plhs, nrhs, prhs)
     ! would like to use mxArrayHeader(Destroy) here
     ! to avoid copy, but get crashes when I do that
     ! and don't have time to investigate
-    rhs(1) = mxArray(ftrcov)
+    !rhs(1) = mxArray(ftrcov)
+    rhs(1) = mxCreateNumericMatrix( Nftr, Nftr, mxDOUBLE_CLASS, mxREAL)
+    call fpGetPr( frhs, rhs(1) )
+    frhs = ftrcov
     k = mexCallMATLAB(1, lhs, 1, rhs, "inv")
+    nullify(frhs)
     call mxDestroyArray(rhs(1))
-    invftrcov => fpGetPr(lhs(1))
+    call fpGetPr( invftrcov, lhs(1) )
 
     !allocate(curtrl(Nftr))
     allocate(stmdif(Nftr,Ncls))

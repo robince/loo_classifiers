@@ -1,24 +1,20 @@
-%
-% MEX build script for windows
-%
-% Tested using intel compiler
+% Need the Fortran 95 MatlabAPI Lite
+% https://github.com/robince/MatlabAPI_Lite/
 
-% Need the Fortran 95 MatlabAPI
-% http://www.mathworks.com/matlabcentral/fileexchange/25934
-% https://github.com/robince/MatlabAPI/
 
-% Path to MatlabAPI 
-MAPI_INC = 'D:\robin\MatlabAPI';
-MAPI_LIB = 'D:\robin\MatlabAPI';
-PKGDIR = '+loo_classifiers';
-LARGEARRAY = true;
+% mex options
 DEBUG = false;
 VERBOSE = false;
+LARGEARRAY = true;
+
+% path to matlab api
+MAPI_INC = '/Users/robince/git/MatlabAPI_lite';
+MAPI_LIB = MAPI_INC;
 
 if ispc
-    LIBEXT = '.obj';
+    OBJEXT = 'obj';
 else
-    LIBEXT = '.lib';
+    OBJEXT = 'o';
 end
 
 ARGS = {};
@@ -27,51 +23,46 @@ else            ARGS{end+1} = '-compatibleArrayDims'; end
 
 if DEBUG,       ARGS{end+1} = '-g'; end
 if VERBOSE,     ARGS{end+1} = '-v'; end
-ARGS{end+1} = '-outdir'; ARGS{end+1} = PKGDIR;
 ARGS{end+1} = ['-I' MAPI_INC];
+
 %%
+% +looc_sorted
+PKGDIR = '+looc_sorted';
+PKGARGS = ARGS;
+PKGARGS{end+1} = '-outdir'; PKGARGS{end+1} = PKGDIR;
+
 % bincount
-MEXARGS = ARGS;
+MEXARGS = PKGARGS;
 MEXARGS{end+1} = fullfile(PKGDIR,'bincount.f');
-MEXARGS{end+1} = fullfile(MAPI_LIB,['MatlabAPImx' LIBEXT]);
-MEXARGS{end+1} = fullfile(MAPI_LIB,['MatlabAPImex' LIBEXT]);
+MEXARGS{end+1} = fullfile(MAPI_LIB,['MatlabAPImx.' OBJEXT]);
+MEXARGS{end+1} = fullfile(MAPI_LIB,['MatlabAPImex.' OBJEXT]);
 mex(MEXARGS{:});
 
 % nearest_mean
-MEXARGS = ARGS;
+MEXARGS = PKGARGS;
 MEXARGS{end+1} = fullfile(PKGDIR,'nearest_mean_core.f');
-MEXARGS{end+1} = fullfile(MAPI_LIB,['MatlabAPImx' LIBEXT]);
-MEXARGS{end+1} = fullfile(MAPI_LIB,['MatlabAPImex' LIBEXT]);
+MEXARGS{end+1} = fullfile(MAPI_LIB,['MatlabAPImx.' OBJEXT]);
+MEXARGS{end+1} = fullfile(MAPI_LIB,['MatlabAPImex.' OBJEXT]);
 mex(MEXARGS{:});
-%%
+
 % linear
-MEXARGS = ARGS;
-% MEXARGS{end+1} = '-liomp5md'; % link omp dynamically as per docs
-MEXARGS{end+1} = fullfile(PKGDIR,'linear_core.f');
-%MEXARGS{end+1} = 'C:\Program Files (x86)\Intel\Composer XE 2011 SP1\mkl\lib\intel64\mkl_rt.lib';
-MEXARGS{end+1} = 'mkl_lapack95_ilp64.lib';
-MEXARGS{end+1} = 'mkl_blas95_ilp64.lib';
-MEXARGS{end+1} = 'mkl_intel_ilp64.lib';
-% MEXARGS{end+1} = 'mkl_intel_thread.lib';
-MEXARGS{end+1} = 'mkl_sequential.lib';
-MEXARGS{end+1} = 'mkl_core.lib';
-MEXARGS{end+1} = fullfile(MAPI_LIB,['MatlabAPImx' LIBEXT]);
-MEXARGS{end+1} = fullfile(MAPI_LIB,['MatlabAPImex' LIBEXT]);
-
+MEXARGS = PKGARGS;
+MEXARGS{end+1} = fullfile(PKGDIR,'linear_core.f')
+MEXARGS{end+1} = fullfile(MAPI_LIB,['MatlabAPImx.' OBJEXT]);
+MEXARGS{end+1} = fullfile(MAPI_LIB,['MatlabAPImex.' OBJEXT]);
 mex(MEXARGS{:});
 
-%%
+
 % diag_linear
-MEXARGS = ARGS;
+MEXARGS = PKGARGS;
 MEXARGS{end+1} = fullfile(PKGDIR,'diag_linear_core.f');
-MEXARGS{end+1} = fullfile(MAPI_LIB,['MatlabAPImx' LIBEXT]);
-MEXARGS{end+1} = fullfile(MAPI_LIB,['MatlabAPImex' LIBEXT]);
+MEXARGS{end+1} = fullfile(MAPI_LIB,['MatlabAPImx.' OBJEXT]);
+MEXARGS{end+1} = fullfile(MAPI_LIB,['MatlabAPImex.' OBJEXT]);
 mex(MEXARGS{:});
 
-%%
 % diag_linear_single
-MEXARGS = ARGS;
+MEXARGS = PKGARGS;
 MEXARGS{end+1} = fullfile(PKGDIR,'diag_linear_single_core.f');
-MEXARGS{end+1} = fullfile(MAPI_LIB,['MatlabAPImx' LIBEXT]);
-MEXARGS{end+1} = fullfile(MAPI_LIB,['MatlabAPImex' LIBEXT]);
+MEXARGS{end+1} = fullfile(MAPI_LIB,['MatlabAPImx.' OBJEXT]);
+MEXARGS{end+1} = fullfile(MAPI_LIB,['MatlabAPImex.' OBJEXT]);
 mex(MEXARGS{:});

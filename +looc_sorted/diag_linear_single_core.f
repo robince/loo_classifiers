@@ -19,6 +19,7 @@ subroutine mexFunction(nlhs, plhs, nrhs, prhs)
     real(8) :: prctrl, trlfac
     mwSize, allocatable :: minidx(:)
     mwSize :: Nftr, Ncls, Ntrl, fi, ci, ti, cci, Ntottrl, Ntrl1, dof
+    mwSize, parameter :: One=1
 
     ! Process Inputs
     if( nrhs /= 1 ) then
@@ -28,7 +29,7 @@ subroutine mexFunction(nlhs, plhs, nrhs, prhs)
         call mexErrMsgTxt("This function returns 2 output")
     endif
 
-    dat => fpGetPr3( prhs(1) )
+    call fpGetPr( dat, prhs(1) )
 
     if( (.not.associated(dat)) ) then
         call mexErrMsgTxt("Problem with inputs: check types and dimensions")
@@ -41,11 +42,11 @@ subroutine mexFunction(nlhs, plhs, nrhs, prhs)
     dof = Ntottrl - 1 - Ncls
     Ntrl1 = Ntrl - 1
 
-    conmtx => fpAllocate2( 1_8, Ncls )
-    prdstm => fpAllocate2( Ntrl, 1_8 )
+    plhs(1) = mxCreateNumericMatrix( One, Ncls, mxDOUBLE_CLASS, mxREAL)
+    call fpGetPr( conmtx, plhs(1) )
 
-    plhs(1) = mxArrayHeader(conmtx)
-    plhs(2) = mxArrayHeader(prdstm)
+    plhs(2) = mxCreateNumericMatrix( Ntrl, One, mxDOUBLE_CLASS, mxREAL)
+    call fpGetPr( prdstm, plhs(2) )
 
     conmtx = 0.0d0
 
