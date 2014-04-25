@@ -1,44 +1,55 @@
-function [conmtx,info] = nearest_mean(data)
+function [conmtx,I] = nearest_mean(X,Y,Ncls)
 %LOO_CLASSIFIERS.NEAREST_MEAN Nearest mean / template matching with LOOCV.
-%   [CONMTX,INFO] = LOO_CLASSIFIERS.NEAREST_MEAN(DATA) performs leave-one-out
+%   [CONMTX,INFO] = LOO_CLASSIFIERS.NEAREST_MEAN(X,Y) performs leave-one-out
 %   cross validation using a nearest mean (template matching) discriminant 
 %   classifier (pooled diagonal covariance with equal variances).
 %
-%   DATA should be a (Nftr, Ncls, Ntrl) 3D array. It is assumed that there 
-%   are the same number of trials for each class, and class priors are 
-%   uniform.
+%   X should be a (Ntrl, Nftr) matrix containing the feature data.
+%   Y should be a length Ntrl vector labelling the class of each trial.
+%   (integers indexed from 1)
+%   Ncls is a scalar representing the number of classes.
+%   Uniform class priors are used.
 %
 %   CONMTX is the (Ncls, Ncls) confusion matrix where the i,j entry gives
 %   the percentage of class i trials which were classsified as class j.
 %   mean(diag(CONMTX)) gives the average correct performance.
 %
-%   INFO is the information in the confusion matrix.
+%   I is the information in the confusion matrix.
 %
 
-[Nftr, Ncls, Ntrl] = size(data);
+[Ntrl, Nftr] = size(X);
+if length(Y) ~= Ntrl
+    error('nearest_mean: Class labels do not match data')
+end
+Y = Y(:);
 
-prdstm = zeros(Ntrl,Ncls);
+prdY = zeros(Ntrl,1);
 conmtx = zeros(Ncls,Ncls);
 
-sum_data = sum(data, 3);
-prctrl = 100 / Ntrl;
-data = data .* Ntrl;
+sum_data = zeros(Ncls, Nftr);
+for fi=1:Nftr
+    sum_data(:,fi) = accumarray(Y, X(:,fi));
+end
+Ntrlcls = accumarray(Y,1);
 
-for ci=1:Ncls 
-    for ti=1:Ntrl
-        % define current vector
-        curtrl = data(:,ci,ti);       
-        tmpval = sum_data - curtrl(:, ones(Ncls, 1));
-        tmpval(:,ci) = tmpval(:,ci) * (Ntrl / (Ntrl-1));
-        stmdst = sum(tmpval .* tmpval, 1);
-        [~, prdstm(ti,ci)] = min(stmdst); 
-        conmtx(ci,prdstm(ti,ci)) = conmtx(ci,prdstm(ti,ci)) + prctrl;
-    end % trials
-end % classes
+% switch to features first
+data = X';
+sum_data = sum_data';
 
-opts.method = 'dr';
-opts.bias   = 'pt';
-opts.btsp   = 0;
-opts.nt     = Ntrl;
-info = information(reshape(prdstm,[1 Ntrl Ncls]),opts,'I');
+prctrl = 100 ./ Ntrlcls;
+trlratio = Ntrlcls ./ (Ntrlcls-1);
+clsones = ones(Ncls, 1);
+for ti=1:Ntrl
+    thscls = Y(ti);
+    % define current vector
+    curtrl = data(:,ti) * Ntrlcls(thscls);
+    tmpval = sum_data - curtrl(:, clsones);
+    tmpval(:,thscls) = tmpval(:,thscls) * trlratio(thscls);
+    clsdst = sum(tmpval .* tmpval, 1);
+    [~, prdcls] = min(clsdst);
+    conmtx(thscls,prdcls) = conmtx(thscls,prdcls) + prctrl(thscls);
+    prdY(ti) = prdcls;
+end
+% [Y, prdY]
+I = info.calc_info(Y-1,Ncls,prdY-1,Ncls,Ntrl);
 
